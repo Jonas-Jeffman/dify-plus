@@ -610,6 +610,8 @@ x-shared-env: &shared-api-worker-env
   PLUGIN_MAX_EXECUTION_TIMEOUT: ${PLUGIN_MAX_EXECUTION_TIMEOUT:-600}
   PLUGIN_DAEMON_TIMEOUT: ${PLUGIN_DAEMON_TIMEOUT:-600.0}
   PIP_MIRROR_URL: ${PIP_MIRROR_URL:-}
+  UV_HTTP_TIMEOUT: ${UV_HTTP_TIMEOUT:-600}
+  PLUGIN_IGNORE_UV_LOCK: ${PLUGIN_IGNORE_UV_LOCK:-false}
   PLUGIN_STORAGE_TYPE: ${PLUGIN_STORAGE_TYPE:-local}
   PLUGIN_STORAGE_LOCAL_ROOT: ${PLUGIN_STORAGE_LOCAL_ROOT:-/app/storage}
   PLUGIN_WORKING_PATH: ${PLUGIN_WORKING_PATH:-/app/storage/cwd}
@@ -693,7 +695,7 @@ x-shared-env: &shared-api-worker-env
   NEXT_PUBLIC_DEFAULT_DOMAIN: ${EMAIL_DOMAIN:-}
   NEXT_PUBLIC_AUTH0_LOGOUT_URL: ${NEXT_PUBLIC_AUTH0_LOGOUT_URL:-}
   ENABLE_EMAIL_PASSWORD_LOGIN: ${ENABLE_EMAIL_PASSWORD_LOGIN:-true}
-  HOSTED_FETCH_APP_TEMPLATES_MODE: ${HOSTED_FETCH_APP_TEMPLATES_MODE:-db}
+  HOSTED_FETCH_APP_TEMPLATES_MODE: ${HOSTED_FETCH_APP_TEMPLATES_MODE:-builtin}
 
 services:
   # Init container to fix permissions
@@ -757,6 +759,8 @@ services:
     volumes:
       # Mount the storage directory to the container, for storing user files.
       - ./volumes/app/storage:/app/api/storage
+      # Mount builtin app templates (Smartwatch Agent demo, etc.)
+      - ../api/constants/recommended_apps.json:/app/api/constants/recommended_apps.json:ro
     networks:
       - ssrf_proxy_network
       - default
@@ -1042,6 +1046,8 @@ services:
       PLUGIN_STDIO_BUFFER_SIZE: ${PLUGIN_STDIO_BUFFER_SIZE:-1024}
       PLUGIN_STDIO_MAX_BUFFER_SIZE: ${PLUGIN_STDIO_MAX_BUFFER_SIZE:-5242880}
       PIP_MIRROR_URL: ${PIP_MIRROR_URL:-}
+      UV_HTTP_TIMEOUT: ${UV_HTTP_TIMEOUT:-600}
+      PLUGIN_IGNORE_UV_LOCK: ${PLUGIN_IGNORE_UV_LOCK:-false}
       PLUGIN_STORAGE_TYPE: ${PLUGIN_STORAGE_TYPE:-local}
       PLUGIN_STORAGE_LOCAL_ROOT: ${PLUGIN_STORAGE_LOCAL_ROOT:-/app/storage}
       PLUGIN_INSTALLED_PATH: ${PLUGIN_INSTALLED_PATH:-plugin}
